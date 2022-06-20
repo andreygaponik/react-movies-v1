@@ -1,57 +1,49 @@
 import axios from "axios";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Movies from "../components/Movies";
 import Preloader from "../components/Preloader";
 import Search from "../components/Search";
 
 const API_KEY = process.env.REACT_APP_API_KEY;
 
-class Main extends React.Component {
-  state = {
-    movies: [],
-    loading: true
-  }
+const Main = () => {
 
-  componentDidMount() {
-    axios.get(`https://www.omdbapi.com/?apikey=${API_KEY}&s=matrix`).then((response) => {
-      this.setState({
-        movies: response.data.Search,
-        loading: false
-      })
-    }).catch((err) => {
-      console.error(err);
-      this.setState({ loading: false })
-    });
-  }
+  const [movies, setMovies] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  handleSearch = (text, type = 'all') => {
-    this.setState({ loading: true })
+  const handleSearch = (text, type = 'all') => {
+    setLoading(true);
     axios.get(`https://www.omdbapi.com/?apikey=${API_KEY}&s=${text}${type !== 'all' ? `&type=${type}` : ''}`).then((response) => {
-      this.setState({
-        movies: response.data.Search,
-        loading: false
-      })
+      setMovies(response.data.Search);
+      setLoading(false)
     }).catch((err) => {
       console.error(err);
-      this.setState({ loading: false })
+      setLoading(false);
     });
-
   }
 
-  render() {
-    return (
-      <main className="content">
-        <div className="container">
-          <Search handleSearch={this.handleSearch} />
-          {
-            !this.state.loading
-              ? <Movies movies={this.state.movies} />
-              : <Preloader />
-          }
-        </div>
-      </main>
-    )
-  }
+  useEffect(() => {
+    axios.get(`https://www.omdbapi.com/?apikey=${API_KEY}&s=matrix`).then((response) => {
+      setMovies(response.data.Search);
+      setLoading(false)
+    }).catch((err) => {
+      console.error(err);
+      setLoading(false);
+    });
+  }, []);
+
+  return (
+    <main className="content">
+      <div className="container">
+        <Search handleSearch={handleSearch} />
+        {
+          !loading
+            ? <Movies movies={movies} />
+            : <Preloader />
+        }
+      </div>
+    </main>
+  )
 }
 
 export default Main;
