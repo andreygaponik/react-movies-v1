@@ -13,21 +13,27 @@ class Main extends React.Component {
   }
 
   componentDidMount() {
-    axios.get(`http://www.omdbapi.com/?apikey=${API_KEY}&s=matrix`).then((response) => {
+    axios.get(`https://www.omdbapi.com/?apikey=${API_KEY}&s=matrix`).then((response) => {
       this.setState({
         movies: response.data.Search,
         loading: false
       })
+    }).catch((err) => {
+      console.error(err);
+      this.setState({ loading: false })
     });
   }
 
   handleSearch = (text, type = 'all') => {
     this.setState({ loading: true })
-    axios.get(`http://www.omdbapi.com/?apikey=${API_KEY}&s=${text}${type !== 'all' ? `&type=${type}` : ''}`).then((response) => {
+    axios.get(`https://www.omdbapi.com/?apikey=${API_KEY}&s=${text}${type !== 'all' ? `&type=${type}` : ''}`).then((response) => {
       this.setState({
         movies: response.data.Search,
         loading: false
       })
+    }).catch((err) => {
+      console.error(err);
+      this.setState({ loading: false })
     });
 
   }
